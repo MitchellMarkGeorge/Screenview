@@ -52,6 +52,7 @@ export class Home extends Component<Props, State> {
               marginBottom="2rem"
               isInvalid={!this.state.remotePeerName}
               onKeyPress={this.onKeyPress}
+              display="block"
               onChange={(e: any) =>
                 this.setState({ remotePeerName: e.target.value.trim() })
               }
@@ -63,6 +64,7 @@ export class Home extends Component<Props, State> {
               appearance="primary"
               onClick={this.props.connect}
               marginBottom="2rem"
+              // display="block"
             >
               Connect Remote Computer
             </Button>

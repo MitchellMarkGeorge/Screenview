@@ -70,12 +70,14 @@ class App extends React.Component<{}, State> {
 
     try {
       this.setState({ isLoading: true });
+      // await navigator.getUserMedia()
+      // await navigator.mediaDevices
       const stream = await navigator.mediaDevices.getUserMedia({
         //@ts-ignore
         video: {
           //@ts-ignore
           mandatory: {
-            chromeMediaSource: "desktop",
+            chromeMediaSource: "screen",
             //   chromeMediaSourceId: source.id
           },
         },

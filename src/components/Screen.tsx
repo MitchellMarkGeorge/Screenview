@@ -9,9 +9,17 @@ interface Props {
 interface State {}
 
 export class Screen extends Component<Props, State> {
+  videoRef: React.RefObject<HTMLVideoElement>;
   state = {};
 
-  componentDidMount() {}
+  constructor(props: Props) {
+    super(props);
+    this.videoRef = React.createRef();
+  }
+
+  componentDidMount() {
+    this.videoRef.current.srcObject = this.props.stream;
+  }
 
   setUpListeners() {
     const mouseDownTypes = ["left", "middle", "right"];
@@ -28,16 +36,16 @@ export class Screen extends Component<Props, State> {
     document.addEventListener("mousemove", this.onMouseMove);
   }
 
-  onMouseDown = (e: any) => { 
-      console.log(e)
+  onMouseDown = (e: any) => {
+    console.log(e);
   };
 
   onKeyDown = (e: KeyboardEvent) => {
-      console.log(e)
+    console.log(e);
   };
 
   onMouseMove = (e: MouseEvent) => {
-      console.log(e)
+    console.log(e);
   };
 
   removeListeners() {}
@@ -45,7 +53,7 @@ export class Screen extends Component<Props, State> {
   render() {
     return (
       <Box height="100%" width="100%" padding="1rem">
-        <video src={URL.createObjectURL(this.props.stream)} autoPlay /> 
+        <video ref={this.videoRef} autoPlay />
         {/* //SHOULD INITIATOR SEE THIS???? */}
       </Box>
     );
