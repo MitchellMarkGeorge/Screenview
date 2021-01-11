@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import Box from "ui-box";
 import { Heading, Paragraph, TextInput, Button, toaster } from "evergreen-ui";
-// import { ipcRenderer, clipboard } from "electron";
+import { ipcRenderer } from "electron";
 
 interface Props {
   peerName: string;
@@ -9,18 +9,19 @@ interface Props {
 }
 
 interface State {
-  remotePeerName: "";
+  remotePeerName: ""; 
 }
 
 export class Home extends Component<Props, State> {
   state: State = { remotePeerName: "" };
-
+  componentDidMount() {
+    // ipcRenderer.send("hello", this.state);
+  }
   onKeyPress = (e: any) => {
-    
     if (e.key === "Enter") {
-        if (!this.state.remotePeerName) {
-            return toaster.danger("ID field can't be empty!"); // do i need this??
-          }
+      if (!this.state.remotePeerName) {
+        return toaster.danger("ID field can't be empty!"); // do i need this??
+      }
       this.props.connect(this.state.remotePeerName);
     }
   };
@@ -72,7 +73,7 @@ export class Home extends Component<Props, State> {
             <Paragraph
               color="muted"
               textDecoration="underline"
-            //   onClick={() => clipboard.writeText(this.props.peerName)}
+              //   onClick={() => clipboard.writeText(this.props.peerName)}
             >
               Your name: {this.props.peerName}
             </Paragraph>

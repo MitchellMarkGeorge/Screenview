@@ -7,26 +7,29 @@ import { Screen } from "./components/Screen";
 import { Loading } from "./components/Loading";
 // import Box from 'ui-box';
 
-
 interface State {
   peer: Peer;
   mediaConnection: Peer.MediaConnection;
+  // connection: Peer.DataConnection;
   stream: MediaStream;
   isLoading: boolean;
 }
+// move peer things to seperate file???
 
 class App extends React.Component<{}, State> {
+  connection: Peer.DataConnection = null;
   state: State = {
     peer: new Peer(randomName()), // should i save the name as a field
     mediaConnection: null,
     stream: null,
     isLoading: false,
+    // connection: null
   };
 
   async componentDidMount() {
     // const peer = new Peer(randomName()); // should i just use uuid?????
     this.state.peer.on("call", (mediaConnection) => {
-        this.setState({ isLoading: true})
+      this.setState({ isLoading: true });
       mediaConnection.answer();
 
       mediaConnection.on("stream", (stream) => {
@@ -36,10 +39,16 @@ class App extends React.Component<{}, State> {
     });
     // this.setState({ peer });
 
+    // this.state.peer.on("")
+    // this.state.mediaConnection.on()
     this.state.peer.on("close", () => {
       if (this.state.mediaConnection) {
         this.setState({ mediaConnection: null });
       }
+    });
+
+    this.state.peer.on("connection", (dataConnection) => {
+      this.setConnection(dataConnection);
     });
 
     this.state.peer.on("error", (e) => {
@@ -59,9 +68,18 @@ class App extends React.Component<{}, State> {
     this.state.peer.destroy();
   }
 
-  setStreamListener() {
-    this.state.mediaConnection?.on("stream", (stream) => {
-      console.log(stream);
+  setConnection(connection: Peer.DataConnection) {
+    this.connection = connection;
+    this.setDataConnectionListeners();
+  }
+
+  setDataConnectionListeners() {
+    this.connection?.on("data", (data) => {
+      console.log(data);
+    });
+
+    this.connection?.on("error", (err) => {
+      console.log(err);
     });
   }
 
@@ -72,6 +90,9 @@ class App extends React.Component<{}, State> {
       this.setState({ isLoading: true });
       // await navigator.getUserMedia()
       // await navigator.mediaDevices
+
+      const connection = this.state.peer.connect(remotePeerName);
+      this.setConnection(connection);
       const stream = await navigator.mediaDevices.getUserMedia({
         //@ts-ignore
         video: {
@@ -93,7 +114,7 @@ class App extends React.Component<{}, State> {
       toaster.danger("Error getting stream");
       console.log(e);
       this.setState({ isLoading: false });
-    } 
+    }
   };
 
   disconnect = () => {
@@ -101,23 +122,14 @@ class App extends React.Component<{}, State> {
   };
 
   render() {
-    if (this.state?.mediaConnection && this.state.stream) {
+    if (this.connection && this.state?.mediaConnection && this.state.stream) {
       return <Screen disconnect={this.disconnect} stream={this.state.stream} />;
     } else if (this.state.isLoading) {
-        return <Loading/>
+      return <Loading />;
     } else {
       return <Home connect={this.connect} peerName={this.state.peer.id} />;
     }
-    // return <Loading/>
   }
 }
-
-// const App = () => {
-//     return (
-//         <div>
-//             Hello friend!
-//         </div>
-//     )
-// }
 
 export default App;

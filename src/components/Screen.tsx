@@ -18,6 +18,7 @@ export class Screen extends Component<Props, State> {
   }
 
   componentDidMount() {
+    this.setUpListeners()
     this.videoRef.current.srcObject = this.props.stream;
   }
 
@@ -48,7 +49,18 @@ export class Screen extends Component<Props, State> {
     console.log(e);
   };
 
-  removeListeners() {}
+  removeListeners() {
+    document.removeEventListener("keydown", this.onKeyDown);
+
+    document.removeEventListener("mousedown", this.onMouseDown);
+
+    // document.addEventListener("scroll", (e) => {
+    //     console.log("SCROLL")
+    //     console.log(e);
+    // })
+
+    document.removeEventListener("mousemove", this.onMouseMove);
+  }
 
   render() {
     return (
