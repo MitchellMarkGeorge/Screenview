@@ -45,7 +45,8 @@ export class Screen extends Component<Props, State> {
   render() {
     return (
       <Box height="100%" width="100%" padding="1rem">
-        <video src={URL.createObjectURL(this.props.stream)} autoPlay />
+        <video src={URL.createObjectURL(this.props.stream)} autoPlay /> 
+        {/* //SHOULD INITIATOR SEE THIS???? */}
       </Box>
     );
   }
