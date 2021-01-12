@@ -21,9 +21,9 @@ export class Screen extends Component<Props, State> {
   }
 
   componentDidMount() {
-    // if (!this.props.isInitiator) {
+    if (!this.props.isInitiator) {
       this.setUpListeners();
-    // }
+    }
     this.videoRef.current.srcObject = this.props.stream;
   }
 
@@ -118,5 +118,8 @@ export class Screen extends Component<Props, State> {
 
   componentWillUnmount() {
     this.props.disconnect();
+    if (!this.props.isInitiator) {
+      this.removeListeners();
+    }
   }
 }
