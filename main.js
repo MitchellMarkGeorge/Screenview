@@ -1,11 +1,12 @@
-const { app, BrowserWindow, Menu, ipcMain, webContents } = require("electron");
+const { app, BrowserWindow, Menu, ipcMain } = require("electron");
 const isDev = require("electron-is-dev");
 const path = require("path");
 
 // let inSession = false;
 console.log(process.version);
+let win = null;
 function createWindow() {
-  const win = new BrowserWindow({
+   win = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
@@ -50,7 +51,7 @@ const template = [
         click () {
           template[0].submenu[0].enabled = false;
           buildMenu(template);
-          webContents.send("endSession");
+          win.webContents.send("endSession");
         }
       },
     ],
