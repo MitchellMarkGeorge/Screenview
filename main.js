@@ -48,6 +48,7 @@ const template = [
         enabled: false,
         click() {
           template[0].submenu[0].enabled = false;
+          win.unmaximize()
           buildMenu(template);
           win.webContents.send("endSession");
         },
@@ -62,6 +63,11 @@ const template = [
         label: "Dev",
         role: "toggleDevTools",
       },
+
+      {
+        label: "Reload",
+        role: "reload"
+      }
     ],
   },
 ];
@@ -106,7 +112,7 @@ ipcMain.on("remoteEvent", (event, payload) => {
     case "keydown":
       // TODO: Support modifires
       const { key } = payload;
-      robotjs.keyTap(key);
+      robotjs.keyTap(key.toLowerCase());
     // code block
   }
 });
