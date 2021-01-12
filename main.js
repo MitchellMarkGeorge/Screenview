@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Menu, ipcMain } = require("electron");
+const { app, BrowserWindow, Menu, ipcMain, webContents } = require("electron");
 const isDev = require("electron-is-dev");
 const path = require("path");
 
@@ -36,6 +36,10 @@ function buildMenu(template) {
   Menu.setApplicationMenu(menu);
 }
 
+function scaleXY(x, y) {
+
+}
+
 const template = [
   {
     label: "Session",
@@ -43,6 +47,11 @@ const template = [
       {
         label: "End session",
         enabled: false,
+        click () {
+          template[0].submenu[0].enabled = false;
+          buildMenu(template);
+          webContents.send("endSession");
+        }
       },
     ],
   },
@@ -51,6 +60,19 @@ const template = [
 
 
 buildMenu(template);
+
+ipcMain.on("updateMenuItem", (event, isEnabled) => {
+  template[0].submenu[0].enabled = isEnabled;
+  buildMenu(template);
+})
+
+ipcMain.on("remoteEvent", (event, payload) => {
+
+  // switch ()
+
+})
+
+
 
 app.whenReady().then(createWindow);
 

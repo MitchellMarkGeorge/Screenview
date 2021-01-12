@@ -5,10 +5,11 @@ import Peer from "peerjs";
 import { Home } from "./components/Home";
 import { Screen } from "./components/Screen";
 import { Loading } from "./components/Loading";
-// import Box from 'ui-box';
+import { ipcRenderer } from "electron";
+import { RemoteEventPayload } from './types'
 
 interface State {
-  peer: Peer;
+  peer: Peer; // does peer need to be in state
   mediaConnection: Peer.MediaConnection;
   // connection: Peer.DataConnection;
   stream: MediaStream;
@@ -26,7 +27,12 @@ class App extends React.Component<{}, State> {
     // connection: null
   };
 
-  async componentDidMount() {
+  componentDidMount() {
+
+    ipcRenderer.on("endSession", () => {
+      this.state.peer.destroy();
+      this.setState({ mediaConnection: null, stream: null });
+    })
     // const peer = new Peer(randomName()); // should i just use uuid?????
     this.state.peer.on("call", (mediaConnection) => {
       this.setState({ isLoading: true });
@@ -43,7 +49,7 @@ class App extends React.Component<{}, State> {
     // this.state.mediaConnection.on()
     this.state.peer.on("close", () => {
       if (this.state.mediaConnection) {
-        this.setState({ mediaConnection: null });
+        this.setState({ mediaConnection: null, stream: null });
       }
     });
 
@@ -59,13 +65,15 @@ class App extends React.Component<{}, State> {
     this.state.peer.on("disconnect", () => {
       console.log("Disconnected");
       if (this.state.mediaConnection) {
-        this.setState({ mediaConnection: null });
+        this.setState({ mediaConnection: null, stream: null });
       }
     });
   }
 
   componentWillUnmount() {
     this.state.peer.destroy();
+    ipcRenderer.removeAllListeners("endSession")
+    screen.width
   }
 
   setConnection(connection: Peer.DataConnection) {
@@ -74,13 +82,18 @@ class App extends React.Component<{}, State> {
   }
 
   setDataConnectionListeners() {
-    this.connection?.on("data", (data) => {
+    this.connection?.on("data", (data: RemoteEventPayload) => {
       console.log(data);
+      // ipcRenderer.send("remoteEvent", data, screen.)
     });
 
     this.connection?.on("error", (err) => {
       console.log(err);
     });
+  }
+
+  sendEvent = (e: {}) => {
+    this.connection.send(e);
   }
 
   connect = async (remotePeerName: string) => {
@@ -109,7 +122,9 @@ class App extends React.Component<{}, State> {
 
       const call = this.state.peer.call(remotePeerName, stream);
       //   call.on("strea")
-      this.setState({ mediaConnection: call, stream, isLoading: false });
+      this.setState({ mediaConnection: call, stream, isLoading: false }, () => {
+        ipcRenderer.send("updateMenuItem", true);
+      });
     } catch (e) {
       toaster.danger("Error getting stream");
       console.log(e);
@@ -117,13 +132,15 @@ class App extends React.Component<{}, State> {
     }
   };
 
+  
+
   disconnect = () => {
     this.state.peer.disconnect(); // should i use destoy???
   };
 
   render() {
     if (this.connection && this.state?.mediaConnection && this.state.stream) {
-      return <Screen disconnect={this.disconnect} stream={this.state.stream} />;
+      return <Screen disconnect={this.disconnect} stream={this.state.stream} sendEvent={this.sendEvent}/>;
     } else if (this.state.isLoading) {
       return <Loading />;
     } else {
