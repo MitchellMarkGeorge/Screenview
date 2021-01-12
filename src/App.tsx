@@ -39,7 +39,9 @@ class App extends React.Component<{}, State> {
       mediaConnection.answer();
 
       mediaConnection.on("stream", (stream) => {
-        this.setState({ mediaConnection, stream, isLoading: false });
+        this.setState({ mediaConnection, stream, isLoading: false }, () => {
+          ipcRenderer.send("updateMenuItem", true);
+        });
       });
       //   this.setState({ mediaConnection }, this.setStreamListener);
     });
