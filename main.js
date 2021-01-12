@@ -23,17 +23,7 @@ function createWindow() {
 }
 
 function buildMenu(template) {
-  if (isDev) {
-    template.push({
-      label: "Dev",
-      submenu: [
-        {
-          label: "Dev",
-          role: "toggleDevTools",
-        },
-      ],
-    });
-  }
+  
   const menu = Menu.buildFromTemplate(template);
   Menu.setApplicationMenu(menu);
 }
@@ -75,7 +65,7 @@ const template = [
     ],
   },
 ];
-ele;
+
 buildMenu(template);
 
 ipcMain.on("updateMenuItem", (event, inSession) => {
