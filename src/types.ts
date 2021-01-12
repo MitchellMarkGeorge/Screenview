@@ -5,5 +5,6 @@ export interface RemoteEventPayload {
     elementHeight?: number
     key?: string
     mouseClickType?: string
+    doubleClick?: boolean
     type: "mousemove" | "mousedown" | "keydown"
 }

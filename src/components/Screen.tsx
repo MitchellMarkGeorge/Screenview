@@ -6,6 +6,7 @@ interface Props {
   disconnect: () => void;
   stream: MediaStream;
   sendEvent: (event: RemoteEventPayload) => void;
+  isInitiator: boolean
 }
 
 interface State {}
@@ -20,7 +21,9 @@ export class Screen extends Component<Props, State> {
   }
 
   componentDidMount() {
-    this.setUpListeners();
+    // if (!this.props.isInitiator) {
+      this.setUpListeners();
+    // }
     this.videoRef.current.srcObject = this.props.stream;
   }
 
@@ -30,6 +33,8 @@ export class Screen extends Component<Props, State> {
     document.addEventListener("keydown", this.onKeyDown);
 
     document.addEventListener("mousedown", this.onMouseDown);
+
+    document.addEventListener("dblclick", this.onDoubleClick);
 
     // document.addEventListener("scroll", (e) => {
     //     console.log("SCROLL")
@@ -77,18 +82,28 @@ export class Screen extends Component<Props, State> {
     this.props.sendEvent(payload);
   };
 
+  onDoubleClick = () => {
+    const payload: RemoteEventPayload = {
+      type: "mousedown",
+      mouseClickType: "left",
+      doubleClick: true
+    };
+    this.props.sendEvent(payload);
+  }
+
   // formatData(e)
 
   removeListeners() {
-    document.removeEventListener("keydown", this.onKeyDown);
 
+    // if (!this.)
+    document.removeEventListener("keydown", this.onKeyDown);
     document.removeEventListener("mousedown", this.onMouseDown);
 
     // document.addEventListener("scroll", (e) => {
     //     console.log("SCROLL")
     //     console.log(e);
     // })
-
+    document.removeEventListener("dblclick", this.onDoubleClick);
     document.removeEventListener("mousemove", this.onMouseMove);
   }
 
